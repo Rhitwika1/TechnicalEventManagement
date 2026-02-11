@@ -65,7 +65,7 @@ function renderVendors() {
     localStorage.setItem('vendors', JSON.stringify(vendors));
 }
 
-// UPDATED addVendor()
+// addVendor()
 function addVendor() {
 
     const id = document.getElementById('vendorId').value.trim();
@@ -86,7 +86,7 @@ function addVendor() {
         return;
     }
 
-    // ❌ Prevent duplicate vendor ID
+    // Prevent duplicate vendor ID
     if(vendors.find(v => v.id === id)) {
         alert("Vendor ID already exists");
         return;
@@ -123,4 +123,5 @@ renderVendors();
 
 </body>
 </html>
+
 
