@@ -14,11 +14,14 @@
 </head>
 <body>
     <div class="container">
+
         <h1>User Planning Dashboard</h1>
+        <h3>Welcome, <span id="displayName"></span></h3>
+
         <div class="nav-buttons">
-    <a href="reports.html" class="btn">View Reports</a>
-    <a href="transactions.html" class="btn">Process Transactions</a>
-</div>
+            <a href="reports.html" class="btn">View Reports</a>
+            <a href="transactions.html" class="btn">Process Transactions</a>
+        </div>
 
         <div class="grid">
             <div class="card">
@@ -34,21 +37,33 @@
                 <ul id="guestDisplay"></ul>
             </div>
         </div>
-        <a href="login.html" onclick="localStorage.removeItem('userRole'); localStorage.removeItem('isLoggedIn');" style="color: red;">Logout</a>
+
+        <a href="login.html"
+           onclick="localStorage.removeItem('userRole');
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('loggedInUser');"
+           style="color: red;">Logout</a>
+
     </div>
 
     <script>
-        // Rule 9 & 11: Security check
+        // Security check
         if (localStorage.getItem('userRole') !== 'user') {
             window.location.href = 'login.html';
         }
 
+        //  Display Logged In Name
+        document.getElementById("displayName").innerText =
+            localStorage.getItem("loggedInUser");
+
         function addGuest() {
             const name = document.getElementById('guestName').value;
             if(!name) return alert("Enter a name");
+
             const li = document.createElement('li');
             li.innerHTML = `${name} <button onclick="this.parentElement.remove()">Delete</button>`;
             document.getElementById('guestDisplay').appendChild(li);
+
             document.getElementById('guestName').value = "";
         }
     </script>
