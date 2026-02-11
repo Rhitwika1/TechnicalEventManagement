@@ -153,48 +153,72 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const role = document.getElementById('role').value;
-            const userId = document.getElementById('userId').value.trim();
-            const pass = document.getElementById('password').value;
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-            // Rule 10: Validation
-            if (!userId || !pass) {
-                alert("Please fill in all mandatory fields.");
-                return;
-            }
+    const role = document.getElementById('role').value;
+    const userId = document.getElementById('userId').value.trim();
+    const pass = document.getElementById('password').value;
 
-            // Logic Part 1: Check database for users who signed up manually
-            let db = JSON.parse(localStorage.getItem('usersDB')) || [];
-            const registeredUser = db.find(u => u.id === userId && u.pass === pass && u.role === role);
+    if (!userId || !pass) {
+        alert("Please fill in all mandatory fields.");
+        return;
+    }
 
-            // Logic Part 2: Hardcoded Demo Rules (e.g. admin/admin123)
-            const isDemoUser = (userId.toLowerCase() === role && pass === role + "123");
+    let isValid = false;
+    let name = "";
 
-            if (registeredUser || isDemoUser) {
-                // Rule 11: Session Management
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', role);
-                localStorage.setItem('userName', registeredUser ? registeredUser.name : userId);
+    // ADMIN LOGIN (Demo)
+    if (role === "admin" && userId === "admin" && pass === "admin123") {
+        isValid = true;
+        name = "Admin";
+    }
 
-                alert('Login Successful! Redirecting...');
+    // USER LOGIN
+    if (role === "user") {
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        const foundUser = users.find(u => u.id === userId && u.password === pass);
 
-                // Rule 13: Redirect Flow
-                if(role === 'admin') {
-                    window.location.href = 'admin_dashboard.html';
-                } else if(role === 'vendor') {
-                    window.location.href = 'vendor_main.html';
-                } else {
-                    window.location.href = 'user_home.html';
-                }
-            } else {
-                // Error Feedback
-                alert('Invalid Credentials.\n\nNote: If you haven\'t registered, use the "Create New Account" link.');
-            }
-        });
-    </script>
+        if (foundUser) {
+            isValid = true;
+            name = foundUser.name;
+        }
+    }
+
+    // VENDOR LOGIN
+    if (role === "vendor") {
+        let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+        const foundVendor = vendors.find(v => v.id === userId && v.password === pass);
+
+        if (foundVendor) {
+            isValid = true;
+            name = foundVendor.name;
+        }
+    }
+
+    if (isValid) {
+
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userRole', role);
+        localStorage.setItem('userName', name);
+
+        alert("Login Successful!");
+
+        if(role === 'admin') {
+            window.location.href = 'admin_dashboard.html';
+        } else if(role === 'vendor') {
+            window.location.href = 'vendor_main.html';
+        } else {
+            window.location.href = 'user_home.html';
+        }
+
+    } else {
+        alert("Invalid Credentials");
+    }
+});
+
+</script>
+
 
 </body>
 </html>
