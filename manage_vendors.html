@@ -36,7 +36,7 @@
 
 <script>
 
-// 🔐 Admin Access Protection
+// Admin Access Protection
 if(localStorage.getItem("userRole") !== "admin") {
     alert("Access Denied");
     window.location.href = "login.html";
@@ -65,7 +65,7 @@ function renderVendors() {
     localStorage.setItem('vendors', JSON.stringify(vendors));
 }
 
-// ✅ UPDATED addVendor()
+// UPDATED addVendor()
 function addVendor() {
 
     const id = document.getElementById('vendorId').value.trim();
@@ -78,7 +78,7 @@ function addVendor() {
         return;
     }
 
-    // 🔍 Validate membership from Event1 storage
+    //  Validate membership from Event1 storage
     let memberships = JSON.parse(localStorage.getItem('Event1')) || [];
 
     if(!memberships.find(m => m.id === membership)) {
@@ -123,3 +123,4 @@ renderVendors();
 
 </body>
 </html>
+
