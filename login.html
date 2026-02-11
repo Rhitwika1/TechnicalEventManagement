@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4472c4;
+            --primary-hover: #365ba3;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --input-bg: #f1f4f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #636e72;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            background: var(--input-bg);
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background: var(--primary-hover);
+        }
+
+        .footer-links {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .chart-link {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: #b2bec3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Event Management</h2>
+        <p class="subtitle">Please enter your details to continue</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Login As</label>
+                <select id="role">
+                    <option value="user">User</option>
+                    <option value="vendor">Vendor</option>
+                    <option value="admin">System Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>User ID</label>
+                <input type="text" id="userId" placeholder="Enter your ID" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login">Sign In</button>
+        </form>
+
+        <div class="footer-links">
+            <a href="signup.html" style="font-weight: bold; color: #27ae60;">Create New Account</a> 
+            <span style="color:#ccc"> | </span>
+            <a href="#">Cancel</a>
+        </div>
+
+        
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const role = document.getElementById('role').value;
+            const userId = document.getElementById('userId').value.trim();
+            const pass = document.getElementById('password').value;
+
+            // Rule 10: Validation
+            if (!userId || !pass) {
+                alert("Please fill in all mandatory fields.");
+                return;
+            }
+
+            // Logic Part 1: Check database for users who signed up manually
+            let db = JSON.parse(localStorage.getItem('usersDB')) || [];
+            const registeredUser = db.find(u => u.id === userId && u.pass === pass && u.role === role);
+
+            // Logic Part 2: Hardcoded Demo Rules (e.g. admin/admin123)
+            const isDemoUser = (userId.toLowerCase() === role && pass === role + "123");
+
+            if (registeredUser || isDemoUser) {
+                // Rule 11: Session Management
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('userName', registeredUser ? registeredUser.name : userId);
+
+                alert('Login Successful! Redirecting...');
+
+                // Rule 13: Redirect Flow
+                if(role === 'admin') {
+                    window.location.href = 'admin_dashboard.html';
+                } else if(role === 'vendor') {
+                    window.location.href = 'vendor_main.html';
+                } else {
+                    window.location.href = 'user_home.html';
+                }
+            } else {
+                // Error Feedback
+                alert('Invalid Credentials.\n\nNote: If you haven\'t registered, use the "Create New Account" link.');
+            }
+        });
+    </script>
+
+</body>
+</html>

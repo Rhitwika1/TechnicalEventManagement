@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Reports</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #4472c4; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        .stat-card h2 { margin: 0; font-size: 2rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
+        th { background: #f8f9fa; }
+        .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #2d3436; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>System Reports</h1>
+        <p>Summary of Membership Data (Rule 2)</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2 id="totalVendors">0</h2>
+                <p>Total Registered Vendors</p>
+            </div>
+            <div class="stat-card" style="background: #27ae60;">
+                <h2>Active</h2>
+                <p>System Status</p>
+            </div>
+        </div>
+
+        <h3>Membership Breakdown</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor</th>
+                    <th>Plan Duration</th>
+                    <th>Enrollment Date</th>
+                </tr>
+            </thead>
+            <tbody id="reportTableBody">
+                </tbody>
+        </table>
+
+        <a href="#" id="dynamicBack" class="btn-back">Back to Dashboard</a>
+        
+    </div>
+
+    <script>
+        // Rule 11: Session Check
+        const role = localStorage.getItem('userRole');
+        if (!role) { window.location.href = 'login.html'; }
+
+        // Rule 9: Redirect logic for Back button
+        const backBtn = document.getElementById('dynamicBack');
+        backBtn.href = (role === 'admin') ? 'admin_dashboard.html' : 'user_home.html';
+
+        window.onload = function() {
+            // Rule 13: Pull real data from Event1 storage
+            const data = JSON.parse(localStorage.getItem('Event1')) || [];
+            const tableBody = document.getElementById('reportTableBody');
+            const totalDisplay = document.getElementById('totalVendors');
+
+            totalDisplay.innerText = data.length;
+
+            if (data.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='3' style='text-align:center'>No maintenance records found.</td></tr>";
+                return;
+            }
+
+            data.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.vendor}</td>
+                        <td>${item.duration}</td>
+                        <td>${item.date}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        };
+    </script>
+</body>
+</html>

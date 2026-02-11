@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Update Membership</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 40px; }
+        .form-card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .field { margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn-search { background: #2d3436; color: white; border: none; padding: 10px; cursor: pointer; width: 100%; margin-bottom: 20px; border-radius: 4px; }
+        .btn-update { background: #4472c4; color: white; border: none; padding: 12px; cursor: pointer; width: 100%; border-radius: 4px; font-weight: bold; }
+        #updateSection { display: none; border-top: 2px solid #eee; padding-top: 20px; }
+        .chart-link { display: block; margin-top: 20px; text-align: center; color: #636e72; text-decoration: none; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h2>Update Membership</h2>
+    
+    <div class="field">
+        <label>Enter Membership Number *</label>
+        <input type="text" id="searchID" placeholder="Enter exactly as saved" required>
+    </div>
+    <button class="btn-search" onclick="lookupMember()">Search Member</button>
+
+    <form id="updateForm">
+        <div id="updateSection">
+            <div class="field">
+                <label>Vendor Name</label>
+                <input type="text" id="upName" readonly style="background-color: #eee;">
+            </div>
+
+            <div class="field">
+                <label>Options (Rule 13)</label>
+                <input type="radio" name="upAction" value="extend" checked> Extend Membership (6 Months) <br>
+                <input type="radio" name="upAction" value="cancel"> Cancel Membership
+            </div>
+
+            <button type="submit" class="btn-update">Update Record</button>
+        </div>
+    </form>
+    
+    <a href="admin_dashboard.html" style="display:block; margin-top:20px; text-align:center; color: #4472c4;">Back to Dashboard</a>
+    
+</div>
+
+<script>
+    // Rule 11: Session Check
+    if (localStorage.getItem('userRole') !== 'admin') { 
+        alert("Admin Access Required");
+        window.location.href = 'login.html'; 
+    }
+
+    let foundIndex = -1; 
+
+    function lookupMember() {
+        const searchInput = document.getElementById('searchID');
+        const searchName = searchInput.value.trim();
+        
+        // Rule 10: Validation (Mandatory field)
+        if (searchName === "") {
+            alert("Membership Number is mandatory for search!");
+            searchInput.focus();
+            return;
+        }
+        
+        // 1. Get real data from Event1
+        const memberships = JSON.parse(localStorage.getItem('Event1')) || [];
+        
+        // 2. Search for the Vendor
+        foundIndex = memberships.findIndex(m => 
+    m.id.toLowerCase() === searchName.toLowerCase()
+);
+
+
+        if (foundIndex !== -1) {
+            const member = memberships[foundIndex];
+            document.getElementById('updateSection').style.display = 'block';
+            document.getElementById('upName').value = member.vendor;
+            alert("Member Found: " + member.vendor);
+        } else {
+            alert("Vendor not found in Event1. Please check the name on the Dashboard.");
+            document.getElementById('updateSection').style.display = 'none';
+        }
+    }
+
+    document.getElementById('updateForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        let memberships = JSON.parse(localStorage.getItem('Event1')) || [];
+        const action = document.querySelector('input[name="upAction"]:checked').value;
+
+        if (action === "cancel") {
+            // Remove the member from the list
+            memberships.splice(foundIndex, 1);
+            alert("Membership Cancelled and Removed successfully.");
+        } else {
+            // Rule 13: Extend by adding to the duration string
+            memberships[foundIndex].duration += " + 6 Months Ext.";
+            alert("Membership Extended by 6 months!");
+        }
+
+        // 3. Save updated list back to Event1
+        localStorage.setItem('Event1', JSON.stringify(memberships));
+        window.location.href = 'admin_dashboard.html';
+    };
+</script>
+
+</body>
+</html>

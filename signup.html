@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .signup-container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .form-group { text-align: left; margin-bottom: 1rem; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #dfe6e9; border-radius: 8px; box-sizing: border-box; }
+        .btn-signup { width: 100%; padding: 14px; background: #4472c4; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="signup-container">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+        <div class="form-group">
+            <label>Register As</label>
+            <select id="newRole">
+                <option value="user">User</option>
+                <option value="vendor">Vendor</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="newName" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label>User ID (Login ID)</label>
+            <input type="text" id="newId" placeholder="Create a unique ID" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="newPass" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-signup">Sign Up</button>
+    </form>
+    <p style="font-size: 0.8rem; margin-top: 15px;">Already have an account? <a href="login.html">Login</a></p>
+    
+    
+</div>
+
+<script>
+    document.getElementById('signupForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const role = document.getElementById('newRole').value;
+        const id = document.getElementById('newId').value.trim();
+        const pass = document.getElementById('newPass').value;
+        const name = document.getElementById('newName').value;
+
+        // Rule 10: Validation
+        if(id.length < 3) {
+            alert("User ID must be at least 3 characters.");
+            return;
+        }
+
+        // Save to a simple Database in LocalStorage
+        let db = JSON.parse(localStorage.getItem('usersDB')) || [];
+        
+        // Check if ID exists
+        if(db.find(user => user.id === id)) {
+            alert("This ID is already taken. Try another.");
+            return;
+        }
+
+        db.push({ id, pass, role, name });
+        localStorage.setItem('usersDB', JSON.stringify(db));
+
+        alert("Account Created Successfully! Please login.");
+        window.location.href = 'login.html';
+    };
+</script>
+
+</body>
+</html>

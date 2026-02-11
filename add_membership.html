@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Add Membership</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 40px; }
+        .form-card { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .field { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; }
+        .btn-save { background: #4472c4; color: white; padding: 10px 20px; border: none; width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h2>Add Membership</h2>
+    <form id="memForm">
+        <div class="field">
+            <label>Vendor Name *</label>
+            <input type="text" id="vName" required>
+        </div>
+
+        <div class="field">
+            <label>Membership Duration (Rule 13)</label>
+            <input type="radio" name="duration" value="6" checked> 6 Months <br>
+            <input type="radio" name="duration" value="12"> 1 Year <br>
+            <input type="radio" name="duration" value="24"> 2 Years
+        </div>
+
+        <div class="field">
+            <label><input type="checkbox" id="confirm" required> Confirm all details are correct</label>
+        </div>
+
+        <button type="submit" class="btn-save">Save Membership</button>
+        <button type="button" onclick="history.back()" style="margin-top:10px; width:100%">Back</button>
+    </form>
+    
+    
+</div>
+
+<script>
+document.getElementById('memForm').onsubmit = function(e) {
+    e.preventDefault();
+
+    const vendorName = document.getElementById('vName').value.trim();
+    const durationInput = document.querySelector('input[name="duration"]:checked');
+    const confirmCheck = document.getElementById('confirm').checked;
+
+    // Validation
+    if (!vendorName) {
+        alert("Vendor Name is mandatory.");
+        return;
+    }
+
+    if (!confirmCheck) {
+        alert("You must confirm the details are correct.");
+        return;
+    }
+
+    let memberships = JSON.parse(localStorage.getItem('Event1')) || [];
+
+    // Generate Membership Number
+    const memNumber = "MEM-" + (100 + memberships.length + 1);
+
+    // Fix Duration Text Properly
+    let durationText = "";
+
+    if (durationInput.value === "6") {
+        durationText = "6 Months";
+    } 
+    else if (durationInput.value === "12") {
+        durationText = "1 Year";
+    } 
+    else {
+        durationText = "2 Years";
+    }
+
+    const newMember = {
+        id: memNumber,
+        vendor: vendorName,
+        duration: durationText,
+        date: new Date().toLocaleDateString()
+    };
+
+    memberships.push(newMember);
+
+    localStorage.setItem('Event1', JSON.stringify(memberships));
+
+    alert("Success!\nMembership Number: " + memNumber + 
+          "\nVendor: " + vendorName + 
+          "\nDuration: " + durationText);
+
+    window.location.href = 'admin_dashboard.html';
+};
+</script>
+
+
+</body>
+</html>

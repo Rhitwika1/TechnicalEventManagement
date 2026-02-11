@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Vendors</title>
+    <style>
+        body { font-family: Arial; padding:30px; background:#f4f7f6; }
+        input { padding:8px; margin:5px; }
+        button { padding:8px 12px; margin:5px; cursor:pointer; }
+        table { width:100%; margin-top:20px; border-collapse:collapse; }
+        th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+    </style>
+</head>
+<body>
+
+<h2>Manage Vendors</h2>
+
+<input type="text" id="vendorId" placeholder="Vendor ID">
+<input type="text" id="vendorName" placeholder="Vendor Name">
+<input type="password" id="vendorPassword" placeholder="Password">
+<input type="text" id="membershipNo" placeholder="Membership No (MEM-101)">
+<button onclick="addVendor()">Add Vendor</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Membership</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="vendorTable"></tbody>
+</table>
+
+<a href="admin_dashboard.html">Back</a>
+
+<script>
+
+// 🔐 Admin Access Protection
+if(localStorage.getItem("userRole") !== "admin") {
+    alert("Access Denied");
+    window.location.href = "login.html";
+}
+
+let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+
+function renderVendors() {
+    const table = document.getElementById('vendorTable');
+    table.innerHTML = "";
+
+    vendors.forEach((vendor, index) => {
+        table.innerHTML += `
+            <tr>
+                <td>${vendor.id}</td>
+                <td>${vendor.name}</td>
+                <td>${vendor.membership}</td>
+                <td>
+                    <button onclick="editVendor(${index})">Edit</button>
+                    <button onclick="deleteVendor(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    localStorage.setItem('vendors', JSON.stringify(vendors));
+}
+
+// ✅ UPDATED addVendor()
+function addVendor() {
+
+    const id = document.getElementById('vendorId').value.trim();
+    const name = document.getElementById('vendorName').value.trim();
+    const password = document.getElementById('vendorPassword').value.trim();
+    const membership = document.getElementById('membershipNo').value.trim();
+
+    if(!id || !name || !password || !membership) {
+        alert("All fields required");
+        return;
+    }
+
+    // 🔍 Validate membership from Event1 storage
+    let memberships = JSON.parse(localStorage.getItem('Event1')) || [];
+
+    if(!memberships.find(m => m.id === membership)) {
+        alert("Invalid Membership Number");
+        return;
+    }
+
+    // ❌ Prevent duplicate vendor ID
+    if(vendors.find(v => v.id === id)) {
+        alert("Vendor ID already exists");
+        return;
+    }
+
+    vendors.push({ id, name, password, membership });
+
+    localStorage.setItem('vendors', JSON.stringify(vendors));
+    renderVendors();
+
+    // Clear fields
+    document.getElementById('vendorId').value = "";
+    document.getElementById('vendorName').value = "";
+    document.getElementById('vendorPassword').value = "";
+    document.getElementById('membershipNo').value = "";
+}
+
+function editVendor(index) {
+    const newName = prompt("Enter new vendor name:");
+    if(newName) {
+        vendors[index].name = newName;
+        renderVendors();
+    }
+}
+
+function deleteVendor(index) {
+    vendors.splice(index, 1);
+    renderVendors();
+}
+
+renderVendors();
+
+</script>
+
+</body>
+</html>

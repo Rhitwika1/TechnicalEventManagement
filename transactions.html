@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Transactions</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total-section { margin-top: 20px; padding-top: 10px; border-top: 2px solid #4472c4; font-weight: bold; font-size: 1.2rem; }
+        .btn-pay { background: #27ae60; color: white; padding: 12px; border: none; width: 100%; cursor: pointer; border-radius: 5px; margin-top: 20px; font-size: 1rem; }
+        .btn-cancel { background: #e74c3c; color: white; padding: 10px; border: none; width: 100%; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Your Transaction</h2>
+        <p class="subtitle">Module: Checkout Flow</p>
+
+        <div id="cartItems">
+            <div class="cart-item">
+                <span>Vendor: Premium Catering</span>
+                <span>$500.00</span>
+            </div>
+            <div class="cart-item">
+                <span>Service: DJ & Lighting</span>
+                <span>$300.00</span>
+            </div>
+        </div>
+
+        <div class="total-section">
+            <span>Total Amount:</span>
+            <span id="totalAmount">$800.00</span>
+        </div>
+
+        <button class="btn-pay" onclick="processPayment()">Confirm & Pay</button>
+        
+        <button class="btn-cancel" onclick="cancelTransaction()">Cancel Transaction</button>
+
+        <a href="admin_dashboard.html" id="backBtn" style="display:block; margin-top:20px; text-align:center;">Back to Home</a>
+        
+    </div>
+
+    <script>
+    // Session Check
+    const role = localStorage.getItem('userRole');
+    if (!role) { window.location.href = 'login.html'; }
+
+    if(role === 'user') {
+        document.getElementById('backBtn').href = 'user_home.html';
+    }
+
+    // Sample cart data (In real case this comes from localStorage)
+    let cart = JSON.parse(localStorage.getItem('cart')) || [
+        { name: "Premium Catering", price: 500 },
+        { name: "DJ & Lighting", price: 300 }
+    ];
+
+    const cartContainer = document.getElementById('cartItems');
+    const totalAmountElement = document.getElementById('totalAmount');
+
+    function renderCart() {
+        cartContainer.innerHTML = "";
+        let total = 0;
+
+        cart.forEach(item => {
+            total += item.price;
+
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <span>$${item.price.toFixed(2)}</span>
+                </div>
+            `;
+        });
+
+        totalAmountElement.innerText = "$" + total.toFixed(2);
+        return total;
+    }
+
+    const total = renderCart();
+
+    function processPayment() {
+        const confirmPay = confirm(`Proceed with payment of $${total.toFixed(2)}?`);
+
+        if(confirmPay) {
+            // Store transaction record
+            let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+            transactions.push({
+                amount: total,
+                date: new Date().toLocaleString(),
+                status: "Confirmed"
+            });
+
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            localStorage.removeItem('cart');
+
+            alert("Payment Successful! Order Status: Confirmed.");
+            window.location.href = (role === 'admin' ? 'admin_dashboard.html' : 'user_home.html');
+        }
+    }
+
+    function cancelTransaction() {
+        if(confirm("Are you sure you want to cancel?")) {
+            localStorage.removeItem('cart');
+            alert("Transaction Cancelled.");
+            window.location.href = (role === 'admin' ? 'admin_dashboard.html' : 'user_home.html');
+        }
+    }
+</script>
+
+</body>
+</html>

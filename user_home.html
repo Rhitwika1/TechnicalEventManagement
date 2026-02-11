@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | User Home</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .nav-buttons { display: flex; gap: 15px; margin-bottom: 20px; }
+        .btn { padding: 10px 20px; background: #4472c4; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Planning Dashboard</h1>
+        <div class="nav-buttons">
+    <a href="reports.html" class="btn">View Reports</a>
+    <a href="transactions.html" class="btn">Process Transactions</a>
+</div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Browse Vendors</h3>
+                <p>Find the best catering, music, and venues for your event.</p>
+                <button class="btn" style="width:100%">Explore Listings</button>
+            </div>
+
+            <div class="card">
+                <h3>Guest List Management</h3>
+                <input type="text" id="guestName" placeholder="Guest Name">
+                <button onclick="addGuest()" class="btn" style="margin-top:10px">Add to List</button>
+                <ul id="guestDisplay"></ul>
+            </div>
+        </div>
+        <a href="login.html" onclick="localStorage.removeItem('userRole'); localStorage.removeItem('isLoggedIn');" style="color: red;">Logout</a>
+    </div>
+
+    <script>
+        // Rule 9 & 11: Security check
+        if (localStorage.getItem('userRole') !== 'user') {
+            window.location.href = 'login.html';
+        }
+
+        function addGuest() {
+            const name = document.getElementById('guestName').value;
+            if(!name) return alert("Enter a name");
+            const li = document.createElement('li');
+            li.innerHTML = `${name} <button onclick="this.parentElement.remove()">Delete</button>`;
+            document.getElementById('guestDisplay').appendChild(li);
+            document.getElementById('guestName').value = "";
+        }
+    </script>
+</body>
+</html>

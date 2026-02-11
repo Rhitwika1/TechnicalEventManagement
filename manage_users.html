@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Users</title>
+    <style>
+        body { font-family: Arial; padding:30px; background:#f4f7f6; }
+        input { padding:8px; margin:5px; }
+        button { padding:8px 12px; margin:5px; cursor:pointer; }
+        table { width:100%; margin-top:20px; border-collapse:collapse; }
+        th, td { border:1px solid #ddd; padding:8px; text-align:center; }
+    </style>
+</head>
+<body>
+
+<h2>Manage Users</h2>
+
+<input type="text" id="userId" placeholder="User ID">
+<input type="text" id="userName" placeholder="User Name">
+<input type="password" id="userPassword" placeholder="Password">
+<button onclick="addUser()">Add User</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="userTable"></tbody>
+</table>
+
+<a href="admin_dashboard.html">Back</a>
+
+<script>
+
+// 🔐 Admin Access Protection (VERY IMPORTANT)
+if(localStorage.getItem("userRole") !== "admin") {
+    alert("Access Denied");
+    window.location.href = "login.html";
+}
+
+let users = JSON.parse(localStorage.getItem('users')) || [];
+
+function renderUsers() {
+    const table = document.getElementById('userTable');
+    table.innerHTML = "";
+
+    users.forEach((user, index) => {
+        table.innerHTML += `
+            <tr>
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>
+                    <button onclick="editUser(${index})">Edit</button>
+                    <button onclick="deleteUser(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+// ✅ UPDATED addUser()
+function addUser() {
+    const id = document.getElementById('userId').value.trim();
+    const name = document.getElementById('userName').value.trim();
+    const password = document.getElementById('userPassword').value.trim();
+
+    if(!id || !name || !password) {
+        alert("All fields required");
+        return;
+    }
+
+    if(users.find(u => u.id === id)) {
+        alert("User ID already exists");
+        return;
+    }
+
+    users.push({ id, name, password });
+
+    localStorage.setItem('users', JSON.stringify(users));
+    renderUsers();
+
+    // Clear input fields after adding
+    document.getElementById('userId').value = "";
+    document.getElementById('userName').value = "";
+    document.getElementById('userPassword').value = "";
+}
+
+function editUser(index) {
+    const newName = prompt("Enter new name:");
+    if(newName) {
+        users[index].name = newName;
+        renderUsers();
+    }
+}
+
+function deleteUser(index) {
+    users.splice(index, 1);
+    renderUsers();
+}
+
+renderUsers();
+
+</script>
+
+</body>
+</html>

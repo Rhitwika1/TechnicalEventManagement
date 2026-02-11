@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS | Vendor Panel</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-size: 0.8em; background: #e1f5fe; color: #01579b; }
+        .btn { background:#4472c4; color:white; padding:8px; border:none; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h2>Vendor Inventory Management</h2>
+        <h3>Welcome, <span id="displayName"></span></h3>
+
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+            <h4>Add New Item</h4>
+            <input type="text" id="itemName" placeholder="Item Name (e.g. DJ Sound System)">
+            <button onclick="addItem()" class="btn">Insert Item</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Your Item</th>
+                    <th>Product Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+                <tr>
+                    <td>Catering Service (Standard)</td>
+                    <td><span class="status-badge">Tracking</span></td>
+                    <td><button onclick="this.closest('tr').remove()">Delete</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="login.html"
+           onclick="localStorage.removeItem('userRole');
+                    localStorage.removeItem('loggedInUser');"
+           style="display:block; margin-top:20px; color:red">Logout</a>
+
+    </div>
+
+    <script>
+        // Security check
+        if (localStorage.getItem('userRole') !== 'vendor') {
+            window.location.href = 'login.html';
+        }
+
+        //  Display Logged In Vendor Name
+        document.getElementById("displayName").innerText =
+            localStorage.getItem("loggedInUser");
+
+        function addItem() {
+            const name = document.getElementById('itemName').value;
+            if(!name) return;
+
+            const row = `<tr>
+                <td>${name}</td>
+                <td><span class="status-badge">Available</span></td>
+                <td><button onclick="this.closest('tr').remove()">Delete</button></td>
+            </tr>`;
+
+            document.getElementById('inventoryBody').innerHTML += row;
+            document.getElementById('itemName').value = "";
+        }
+    </script>
+</body>
+</html>
