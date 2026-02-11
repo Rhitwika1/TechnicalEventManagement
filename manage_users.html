@@ -34,7 +34,7 @@
 
 <script>
 
-// 🔐 Admin Access Protection (VERY IMPORTANT)
+//  Admin Access Protection 
 if(localStorage.getItem("userRole") !== "admin") {
     alert("Access Denied");
     window.location.href = "login.html";
@@ -62,7 +62,7 @@ function renderUsers() {
     localStorage.setItem('users', JSON.stringify(users));
 }
 
-// ✅ UPDATED addUser()
+//   addUser()
 function addUser() {
     const id = document.getElementById('userId').value.trim();
     const name = document.getElementById('userName').value.trim();
@@ -108,3 +108,4 @@ renderUsers();
 
 </body>
 </html>
+
